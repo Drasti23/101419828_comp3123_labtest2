@@ -1,25 +1,36 @@
-import logo from './logo.svg';
+import React, { useState } from "react";
+import axios from "axios";
+import Weather from "./components/Weather";
+import Search from "./components/Search";
 import './App.css';
 
-function App() {
+const API_KEY = "72326efbcfdb9e360560ccc263b709d2";
+
+const App = () => {
+  const [weather, setWeather] = useState(null);
+  const [input, setInput] = useState("");
+
+  const handleSearch = async () => {
+    if (input.trim()) {
+      try {
+        const response = await axios.get(
+          `https://api.openweathermap.org/data/2.5/weather?q=${input}&appid=${API_KEY}&units=metric`
+        );
+        setWeather(response.data);
+      } catch (error) {
+        console.error("Error fetching weather data:", error);
+        alert("City not found. Please try again.");
+      }
+    }
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className="app">
+      <h1>Weather Forecast</h1>
+      <Search input={input} setInput={setInput} handleSearch={handleSearch} />
+      {weather && <Weather weather={weather} />}
     </div>
   );
-}
+};
 
 export default App;
